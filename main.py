@@ -23,6 +23,7 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 
 def get_from_anekdotbar(n):
+    """получение анекдотов с сайта Anekdotbar.ru"""
     r = requests.get("https://anekdotbar.ru/")
     data = []
     for i in html.unescape(r.text).split('div class="tecst">')[1:n + 1:]:
@@ -32,6 +33,7 @@ def get_from_anekdotbar(n):
 
 
 def get_from_anekdoty_ru(n):
+    """получение анекдотов с сайта Анекдоты.ру"""
     r = requests.get("https://anekdoty.ru/")
     dat = []
     for i in html.unescape(r.text).split('<ul class="item-list">')[1].split("<li id="):
@@ -47,11 +49,13 @@ def get_from_anekdoty_ru(n):
 
 
 class AddJokeForm(FlaskForm):
+    #форма добавления анекдота
     text = TextAreaField('Анекдот', validators=[DataRequired()])
     submit = SubmitField('Добавить')
 
 
 class SignUpForm(FlaskForm):
+    # форма регистрации
     login = StringField('Имя пользователя', validators=[DataRequired()])
     email = EmailField('Электронная почта', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
@@ -60,21 +64,19 @@ class SignUpForm(FlaskForm):
 
 
 class SignInForm(FlaskForm):
+    # форма входа
     login = StringField('Имя пользователя', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     submit = SubmitField('Вход')
 
 
 class AccauntForm(FlaskForm):
+    # форма выхода
     submit = SubmitField('Выход')
 
 
-class PhotoForm(FlaskForm):
-    file = FileField('Загрузить аватарку', validators=[validators.Optional()])
-    submit = SubmitField('Отправить')
-
-
 def func_of_joke(key, db_sess, name, checks):
+    """обработка событий с кнопок на анекдотах"""
     print(checks)
     if "del" in key and checks["delete"]:
         if request.form.get(key):
@@ -139,9 +141,11 @@ def allowed_file(filename):
 @app.route('/add-joke', methods=['GET', 'POST'])
 def add_joke():
     name = session.get('name', '')
+    # поиск
     search_joke = request.args.get('search_joke', default='', type=str)
     if search_joke != '':
         return redirect(f'../search/{search_joke}')
+    # добавление формы
     form = AddJokeForm()
     authorized = session.get('authorized', False)
     db_sess = create_session()
@@ -163,6 +167,7 @@ def sign_in():
     name = session.get('name', '')
     form = SignInForm()
     authorized = session.get('authorized', False)
+    # поиск
     search_joke = request.args.get('search_joke', default='', type=str)
     if search_joke != '':
         return redirect(f'../search/{search_joke}')
@@ -188,6 +193,7 @@ def sign_in():
 def sign_up():
     form = SignUpForm()
     authorized = session.get('authorized', False)
+    # поиск
     search_joke = request.args.get('search_joke', default='', type=str)
     if search_joke != '':
         return redirect(f'../search/{search_joke}')
@@ -221,8 +227,10 @@ def sign_up():
 
 @app.route('/accaunt', methods=['GET', 'POST'])
 def accaunt():
+    # Страница аккаунта
     db_sess = create_session()
     search_joke = request.args.get('search_joke', default='', type=str)
+    # кнопки на анекдотах
     during_checks = dict()
     during_checks["copy"] = True
     during_checks["delete"] = True
@@ -244,6 +252,7 @@ def accaunt():
             session['is_photo'] = False
             return redirect('../index')
         d = request.form.to_dict()
+        # обработка аватарки
         if 'file' not in request.files:
             flash('Не могу прочитать файл')
             return redirect(request.url)
@@ -283,11 +292,13 @@ def accaunt():
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
+    # Главная страница
     joke_by_anekdoty_ru = get_from_anekdoty_ru(1)[0]
     joke_by_anekdotbar = get_from_anekdotbar(1)[0]
     db_sess = create_session()
     name = session.get('name', '')
     authorized = session.get('authorized', False)
+    # кнопки на анекдотах
     during_checks = dict()
     user = db_sess.query(User).filter(User.name == name).first()
     during_checks["copy"] = True
@@ -305,6 +316,7 @@ def index():
         d = request.form.to_dict()
         for i in d.keys():
             func_of_joke(i, db_sess, name, during_checks)
+    # поиск
     search_joke = request.args.get('search_joke', default='', type=str)
     if search_joke != '':
         return redirect(f'../search/{search_joke}')
@@ -327,9 +339,11 @@ def index():
 
 @app.route('/search/<text>', methods=['GET', 'POST'])
 def search(text):
+    # Страница поиска
     db_sess = create_session()
     name = session.get('name', '')
     authorized = session.get('authorized', False)
+    # кнопки на анекдотах
     during_checks = dict()
     user = db_sess.query(User).filter(User.name == name).first()
     during_checks["copy"] = True
@@ -347,12 +361,11 @@ def search(text):
         d = request.form.to_dict()
         for i in d.keys():
             func_of_joke(i, db_sess, name, during_checks)
+    # поиск
     search_joke = request.args.get('search_joke', default='', type=str)
     if search_joke != '':
         return redirect(f'../search/{search_joke}')
     name = session.get('name', '')
-    tags = ["Чёрный юмор", "Негр", "Вовочка", "Русский", "Чебурашка", "Немец", "Необитаемый остров", "Приколы",
-            "Каламбуры"]
     data = []
     jokes = db_sess.query(Joke).all()
     for i in jokes:
@@ -366,15 +379,17 @@ def search(text):
             dat["range"] = i.range
             print(i.id)
             data.append(dat)
-    return render_template('search.html', title="Поиск", authorized=authorized, name=name, tag=[], tags=tags,
+    return render_template('search.html', title="Поиск", authorized=authorized, name=name, tag=[],
                            jokes=data, search_text=text, checks=during_checks)
 
 
 @app.route('/top', methods=['GET', 'POST'])
 def top():
+    # Топ анекдотов
     db_sess = create_session()
     name = session.get('name', '')
     authorized = session.get('authorized', False)
+    # кнопки на анекдотах
     during_checks = dict()
     user = db_sess.query(User).filter(User.name == name).first()
     during_checks["copy"] = True
@@ -392,6 +407,7 @@ def top():
         d = request.form.to_dict()
         for i in d.keys():
             func_of_joke(i, db_sess, name, during_checks)
+    # поиск
     search_joke = request.args.get('search_joke', default='', type=str)
     if search_joke != '':
         return redirect(f'../search/{search_joke}')
@@ -414,8 +430,10 @@ def top():
 
 @app.route('/anekdoty_ru', methods=['GET', 'POST'])
 def anekdoty_ru():
+    # Страница с анекдотами с сайта анекдоты.ру
     name = session.get('name', '')
     authorized = session.get('authorized', False)
+    # поиск
     search_joke = request.args.get('search_joke', default='', type=str)
     if search_joke != '':
         return redirect(f'../search/{search_joke}')
@@ -428,8 +446,10 @@ def anekdoty_ru():
 
 @app.route('/anekdotbar', methods=['GET', 'POST'])
 def anekdotbar():
+    # Страница с анекдотами с сайта анекдотбар.ру
     name = session.get('name', '')
     authorized = session.get('authorized', False)
+    # поиск
     search_joke = request.args.get('search_joke', default='', type=str)
     if search_joke != '':
         return redirect(f'../search/{search_joke}')
@@ -439,6 +459,7 @@ def anekdotbar():
 
 @app.route('/accaunts/<accaunt_id>', methods=['GET', 'POST'])
 def accaunts(accaunt_id):
+    # Страницы аккаунтов пользователей
     db_sess = create_session()
     search_joke = request.args.get('search_joke', default='', type=str)
     authorized = session.get('authorized', False)
@@ -484,21 +505,5 @@ def accaunts(accaunt_id):
                            jokes=data, id=id, checks=during_checks)
 
 
-@app.route('/tags/<tag>')
-def tag(tag):
-    authorized = session.get('authorized', False)
-    search_joke = request.args.get('search_joke', default='', type=str)
-    if search_joke != '':
-        return redirect(f'../search/{search_joke}')
-    name = session.get('name', '')
-    tags = ["Чёрный юмор", "Негр", "Вовочка", "Русский", "Чебурашка", "Немец", "Необитаемый остров", "Приколы",
-            "Каламбуры"]
-    data = tag.split("&")
-    for i in data:
-        if i in tags:
-            tags.remove(i)
-    return render_template('tags.html', title="Главная страница", authorized=authorized, name=name, tag=data, tags=tags)
-
-
-if __name__ == '__main__':
+if __name__ == '__init__':
     app.run(port=5000, host='127.0.0.1')
