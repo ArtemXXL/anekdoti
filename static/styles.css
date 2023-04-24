@@ -6,15 +6,11 @@ body{
     background-size: 20%;
 }
 .content{
-    margin-left: 15%;
-    margin-right: 15%;
     background-color: white;
     height: 100%;
 }
 
 .footer{
-    margin-left: 15%;
-    margin-right: 15%;
     background-color: white;
 }
 
@@ -52,3 +48,15 @@ background-color: #DC3545;
   background-color: #FFC200;    /* цвет плашки */
   border-radius: 20px;       /* закругления плашки */
 }
+
+@media (min-width: 768px) {
+.content{
+    margin-left: 15%;
+    margin-right: 15%;
+    }
+.footer{
+    margin-left: 15%;
+    margin-right: 15%;
+    }
+}
+
