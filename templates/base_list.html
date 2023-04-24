@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <br>
+    {% block top_content %}
+    {% endblock %}
+    {% for item in jokes %}
+    <div class="card shadow-sm" id="joke{{ item['id'] }}" style="margin-left: 5%; margin-right: 5%; margin-top: 2%; background-color: #FFC200; border-radius: 20px; border: 0px;">
+    <div class="card-body">
+        <p class="card-text" style="font-size: 150%;">{% for j in item["content"] %}
+                                                            {{ j }}<br>
+                                                        {% endfor %}</p>
+        <form method="POST">
+        <p>
+            {% if checks["copy"] %}
+                <input align="right" class="btn btn-danger" type="submit" value="копировать" name="copy{{ item['id'] }}"/>
+            {% endif %}
+            {% if checks["up"] %}
+                <input align="right" class="btn btn-success" type="submit" value="+" name="up{{ item['id'] }}"/>
+                {{ item['range'] }}
+                <input align="right" class="btn btn-danger" type="submit" value="-" name="down{{ item['id'] }}"/>
+            {% endif %}
+            {% if checks["delete"] %}
+                <input align="right" class="btn btn-danger" type="submit" value="удалить" name="del{{ item['id'] }}"/>
+            {% endif %}
+            </p>
+        </form>
+        <p align="right" class="card-text">{{ item["date"] }} <a style="color: black;" href="../accaunts/{{ item['user_id'] }}">{{ item["user"] }}</a></p>
+    </div>
+
+</div>
+{% endfor %}
+{% block bottom_content %}
+    {% endblock %}
+{% endblock %}

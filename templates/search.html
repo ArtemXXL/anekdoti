@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-left: 10%; margin-right: 10%;">
+<h1 align="center">Поиск: {{ search_text }}</h1>
+    <form class="d-flex" role="search">
+        <input value="{{ search_text }}" class="form-control me-3" name="search_joke" type="search" placeholder="Поиск" aria-label="Поиск">
+        <button class="btn btn-warning" type="submit">Поиск</button>
+      </form>
+  {% for item in jokes %}
+    <div class="card shadow-sm" style="margin-left: 5%; margin-right: 5%; margin-top: 2%; background-color: #FFC200; border-radius: 20px; border: 0px;">
+    <div class="card-body">
+        <p class="card-text" style="font-size: 150%;">{% for j in item["content"] %}
+                                                            {{ j }}
+                                                        {% endfor %}</p>
+        <form method="POST">
+        <p>
+            <input align="right" class="btn btn-danger" type="submit" value="копировать" name="copy{{ item['id'] }}"/>
+            <input align="right" class="btn btn-success" type="submit" value="+" name="up{{ item['id'] }}"/>
+            {{ item['range'] }}
+            <input align="right" class="btn btn-danger" type="submit" value="-" name="down{{ item['id'] }}"/>
+            </p>
+        </form>
+        <p align="right" class="card-text">{{ item["date"] }} {{ item["user"] }}</p>
+    </div>
+</div>
+    {% endfor %}
+
+</div>
+{% endblock %}

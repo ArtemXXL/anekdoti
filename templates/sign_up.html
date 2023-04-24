@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-left: 10%; margin-right: 10%;">
+<h1 align="center">Регистрация</h1>
+<form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.login.label }}<br>
+        {{ form.login(class="form-control") }}<br>
+        {% for error in form.login.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.email.label }}<br>
+        {{ form.email(class="form-control", type="email") }}<br>
+        {% for error in form.email.errors %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.password.label }}<br>
+        {{ form.password(class="form-control") }}<br>
+        {% for error in form.password.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.second_password.label }}<br>
+        {{ form.second_password(class="form-control", type="password") }}<br>
+        {% for error in form.second_password.errors %}
+    <div class="alert alert-dnager" role="alert">
+        {{ error }}
+    </div>
+    {% endfor %}
+    </p>
+    {% if error_sign_up != "" %}
+        <div class="alert alert-danger" role="alert">
+            {{ error_sign_up }}
+        </div>
+    {% endif %}
+    <p>{{ form.submit(type="submit", class="btn btn-warning") }}</p>
+</form>
+</div>
+{% endblock %}

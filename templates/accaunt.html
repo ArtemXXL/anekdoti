@@ -1,0 +1,39 @@
+{% extends "base_list.html" %}
+
+{% block top_content %}
+<div style="margin-left: 10%; margin-right: 10%;">
+  <h1 align="center">{{ name }}
+    {% if role == "admin" %} 🍎
+    {% elif role == "king" %} 👑
+    {% elif role == "banned" %} ❌
+    {% elif role == "regular" %} 😂
+    {% endif %}
+  </h1>
+  {% if is_photo %}
+  <p align="center">
+  <img style="object-fit: cover; aspect-ratio: 1;border-radius: 70px; height: 140px;" src="../static/uploads/{{ id }}.png">
+  </p>
+  {% endif %}
+  <h3>Электронная почта: {{ email }}</h3>
+  <h3>Роль: {% if role == "admin" %} Админ
+    {% elif role == "king" %} Король
+    {% elif role == "banned" %} Заблокированный
+    {% elif role == "regular" %} Обычный
+    {% endif %}</h3>
+
+
+  <p>
+        <form method=post enctype=multipart/form-data>
+            <h3>Аватарка:</h3>
+            <input class="btn btn-warning" type=file name=file>
+            <input class="btn btn-warning" type=submit value=Отправить>
+        </form>
+    </p>
+  <form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>{{ form.submit(type="submit", class="btn btn-warning") }}<a href="../add-joke" style="margin-left: 1%" class="btn btn-danger">Добавить анекдот</a></p>
+
+</form>
+
+</div>
+{% endblock %}

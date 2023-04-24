@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div style="display: flex;" class="during_tags shadow">
+        {% for item in tag %}
+            <button style="border-radius: 20px; margin: 2%; white-space: nowrap;" type="button" class="btn btn-warning">{{ item }}</button>
+        {% endfor %}
+    </div>
+{% endblock %}

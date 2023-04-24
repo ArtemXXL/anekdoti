@@ -1,0 +1,54 @@
+
+body{
+    background-image: url(img/pat.png);
+    background-repeat: repeat;
+    background-position: center;
+    background-size: 20%;
+}
+.content{
+    margin-left: 15%;
+    margin-right: 15%;
+    background-color: white;
+    height: 100%;
+}
+
+.footer{
+    margin-left: 15%;
+    margin-right: 15%;
+    background-color: white;
+}
+
+.tags{
+height: 13vh;
+overflow-x: auto;
+background-color: #FFC200;
+}
+
+::-webkit-scrollbar {
+  width: 15px;               /* ширина scrollbar */
+}
+::-webkit-scrollbar-track {
+  background: #DC3545;        /* цвет дорожки */
+}
+::-webkit-scrollbar-thumb {
+  background-color: #FFC200;    /* цвет плашки */
+  border-radius: 20px;       /* закругления плашки */
+}
+
+
+.during_tags{
+height: 13vh;
+overflow-x: auto;
+background-color: #DC3545;
+}
+
+.during_tags::-webkit-scrollbar {
+  width: 10px;               /* ширина scrollbar */
+}
+.during_tags::-webkit-scrollbar-track {
+  background: #DC3545;        /* цвет дорожки */
+}
+.during_tags::-webkit-scrollbar-thumb {
+  background-color: #FFC200;    /* цвет плашки */
+  border-radius: 20px;       /* закругления плашки */
+}
