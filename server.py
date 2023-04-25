@@ -77,11 +77,9 @@ class AccauntForm(FlaskForm):
 
 def func_of_joke(key, db_sess, name, checks):
     """обработка событий с кнопок на анекдотах"""
-    print(checks)
     if "del" in key and checks["delete"]:
         if request.form.get(key):
             dat = key.split("del")
-            print(dat)
             id = int(dat[1])
             joke = db_sess.query(Joke).filter(Joke.id == id).first()
             db_sess.delete(joke)
@@ -107,7 +105,6 @@ def func_of_joke(key, db_sess, name, checks):
             else:
                 joke.range += 1
             votes[str(id)] = 1
-            print(votes)
             user.vote = json.dumps(votes)
             db_sess.commit()
             during_id = "joke" + str(id)
@@ -125,7 +122,6 @@ def func_of_joke(key, db_sess, name, checks):
             else:
                 joke.range -= 1
             votes[str(id)] = -1
-            print(votes)
             user.vote = json.dumps(votes)
             db_sess.commit()
             during_id = "joke" + str(id)
@@ -152,7 +148,6 @@ def add_joke():
     user = db_sess.query(User).filter(User.name == name).first()
     if form.validate_on_submit():
         joke = Joke()
-        print(form.text.data)
         joke.content = "|".join(form.text.data.split("\n"))
         joke.user_id = user.id
         joke.range = 0
@@ -236,15 +231,18 @@ def accaunt():
     during_checks["delete"] = True
     during_checks["down"] = False
     during_checks["up"] = False
-    is_photo = session.get('is_photo', False)
     name = session.get('name', '')
+    if request.method == 'POST':
+        d = request.form.to_dict()
+        for i in d.keys():
+            func_of_joke(i, db_sess, name, during_checks)
+    is_photo = session.get('is_photo', False)
     user = db_sess.query(User).filter(User.name == name).first()
     form = AccauntForm()
     if search_joke != '':
         return redirect(f'../search/{search_joke}')
     if request.method == 'POST':
         if form.validate_on_submit():
-            print(2)
             session['authorized'] = False
             session['name'] = ''
             session['email'] = ''
@@ -283,8 +281,6 @@ def accaunt():
         dat["user_id"] = i.user_id
         dat["range"] = i.range
         data.append(dat)
-
-    print(id)
     return render_template('accaunt.html', title='Аккаунт', authorized=authorized, name=name, email=email,
                            form=form, jokes=data, id=id, checks=during_checks, role=role, is_photo=user.is_photo)
 
@@ -325,7 +321,6 @@ def index():
     for i in jokes:
         dat = dict()
         dat["content"] = i.content.split("|")
-        print(dat["content"])
         dat["user"] = db_sess.query(User).filter(User.id == i.user_id).first().name
         dat["date"] = i.date.strftime('%m.%d.%Y')
         dat["id"] = i.id
@@ -377,7 +372,6 @@ def search(text):
             dat["id"] = i.id
             dat["user_id"] = i.user_id
             dat["range"] = i.range
-            print(i.id)
             data.append(dat)
     return render_template('search.html', title="Поиск", authorized=authorized, name=name, tag=[],
                            jokes=data, search_text=text, checks=during_checks)
@@ -416,7 +410,6 @@ def top():
     for i in jokes:
         dat = dict()
         dat["content"] = i.content.split("|")
-        print(dat["content"])
         dat["user"] = db_sess.query(User).filter(User.id == i.user_id).first().name
         dat["date"] = i.date.strftime('%m.%d.%Y')
         dat["id"] = i.id
